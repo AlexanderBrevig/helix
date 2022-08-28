@@ -55,7 +55,7 @@
 "info" = "aqua"
 "warning" = "yellow"
 "error" = "nasty-red"
-"diagnostic" = { fg = "nasty-red", modifiers = ["underlined"] }
+"diagnostic" = { fg = "dark-red", modifiers = ["underlined"] }
 
 "diff.plus" = { fg = "green" }
 "diff.delta" = { fg = "orange" }
