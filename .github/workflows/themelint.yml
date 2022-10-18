@@ -21,6 +21,10 @@ jobs:
 
       - uses: Swatinem/rust-cache@v1
 
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v32
+
       - name: Themelint all changed files
         run: |
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
