@@ -176,21 +176,56 @@ sudo dnf install helix
 <h3 id="void-linux"><a class="header" href="#void-linux">Void Linux</a></h3>
 <pre><code>sudo xbps-install helix
 </code></pre>
+<h2 id="windows"><a class="header" href="#windows">Windows</a></h2>
+<p>Helix can be installed using <a href="https://scoop.sh/">Scoop</a>, <a href="https://chocolatey.org/">Chocolatey</a>
+or <a href="https://msys2.org/">MSYS2</a>.</p>
+<p><strong>Scoop:</strong></p>
+<pre><code>scoop install helix
+</code></pre>
+<p><strong>Chocolatey:</strong></p>
+<pre><code>choco install helix
+</code></pre>
+<p><strong>MSYS2:</strong></p>
+<pre><code>pacman -S mingw-w64-i686-helix
+</code></pre>
+<p>or</p>
+<pre><code>pacman -S mingw-w64-x86_64-helix
+</code></pre>
+<p>or</p>
+<pre><code>pacman -S mingw-w64-ucrt-x86_64-helix
+</code></pre>
 <h2 id="build-from-source"><a class="header" href="#build-from-source">Build from source</a></h2>
 <pre><code>git clone https://github.com/helix-editor/helix
 cd helix
 cargo install --path helix-term
 </code></pre>
-<p>This will install the <code>hx</code> binary to <code>$HOME/.cargo/bin</code>.</p>
+<p>This will install the <code>hx</code> binary to <code>$HOME/.cargo/bin</code> and build tree-sitter grammars in <code>./runtime/grammars</code>.</p>
 <p>Helix also needs its runtime files so make sure to copy/symlink the <code>runtime/</code> directory into the
 config directory (for example <code>~/.config/helix/runtime</code> on Linux/macOS). This location can be overridden
 via the <code>HELIX_RUNTIME</code> environment variable.</p>
-<div class="table-wrapper"><table><thead><tr><th>OS</th><th>command</th></tr></thead><tbody>
-<tr><td>windows(cmd.exe)</td><td><code>xcopy /e /i runtime %AppData%/helix/runtime</code></td></tr>
-<tr><td>windows(powershell)</td><td><code>xcopy /e /i runtime $Env:AppData\helix\runtime</code></td></tr>
-<tr><td>linux/macos</td><td><code>ln -s $PWD/runtime ~/.config/helix/runtime</code></td></tr>
+<div class="table-wrapper"><table><thead><tr><th>OS</th><th>Command</th></tr></thead><tbody>
+<tr><td>Windows (Cmd)</td><td><code>xcopy /e /i runtime %AppData%\helix\runtime</code></td></tr>
+<tr><td>Windows (PowerShell)</td><td><code>xcopy /e /i runtime $Env:AppData\helix\runtime</code></td></tr>
+<tr><td>Linux / macOS</td><td><code>ln -s $PWD/runtime ~/.config/helix/runtime</code></td></tr>
 </tbody></table>
 </div>
+<p>Starting with Windows Vista you can also create symbolic links on Windows. Note that this requires
+elevated privileges - i.e. PowerShell or Cmd must be run as administrator.</p>
+<p><strong>PowerShell:</strong></p>
+<pre><code class="language-powershell">New-Item -ItemType SymbolicLink -Target &quot;runtime&quot; -Path &quot;$Env:AppData\helix\runtime&quot;
+</code></pre>
+<p><strong>Cmd:</strong></p>
+<pre><code class="language-cmd">cd %appdata%\helix
+mklink /D runtime &quot;&lt;helix-repo&gt;\runtime&quot;
+</code></pre>
+<p>The runtime location can be overridden via the <code>HELIX_RUNTIME</code> environment variable.</p>
+<blockquote>
+<p>NOTE: if <code>HELIX_RUNTIME</code> is set prior to calling <code>cargo install --path helix-term</code>,
+tree-sitter grammars will be built in <code>$HELIX_RUNTIME/grammars</code>.</p>
+</blockquote>
+<p>If you plan on keeping the repo locally, an alternative to copying/symlinking
+runtime files is to set <code>HELIX_RUNTIME=/path/to/helix/runtime</code>
+(<code>HELIX_RUNTIME=$PWD/runtime</code> if you're in the helix repo directory).</p>
 <p>To use Helix in desktop environments that supports <a href="https://specifications.freedesktop.org/menu-spec/menu-spec-latest.html">XDG desktop menu</a>, including Gnome and KDE, copy the provided <code>.desktop</code> file to the correct folder:</p>
 <pre><code class="language-bash">cp contrib/Helix.desktop ~/.local/share/applications
 </code></pre>
@@ -563,7 +598,7 @@ it).</p>
 <h4 id="match-mode"><a class="header" href="#match-mode">Match mode</a></h4>
 <p>Accessed by typing <code>m</code> in <a href="keymap.html#normal-mode">normal mode</a>.</p>
 <p>See the relevant section in <a href="./usage.html">Usage</a> for an explanation about
-<a href="./usage.html#surround">surround</a> and <a href="./usage.html#textobject">textobject</a> usage.</p>
+<a href="./usage.html#surround">surround</a> and <a href="./usage.html#textobjects">textobject</a> usage.</p>
 <div class="table-wrapper"><table><thead><tr><th>Key</th><th>Description</th><th>Command</th></tr></thead><tbody>
 <tr><td><code>m</code></td><td>Goto matching bracket (<strong>TS</strong>)</td><td><code>match_brackets</code></td></tr>
 <tr><td><code>s</code> <code>&lt;char&gt;</code></td><td>Surround current selection with <code>&lt;char&gt;</code></td><td><code>surround_add</code></td></tr>
@@ -781,7 +816,7 @@ you to selectively add search terms to your selections.</p>
 <tr><td><code>:quit-all!</code>, <code>:qa!</code></td><td>Force close all views ignoring unsaved changes.</td></tr>
 <tr><td><code>:cquit</code>, <code>:cq</code></td><td>Quit with exit code (default 1). Accepts an optional integer exit code (:cq 2).</td></tr>
 <tr><td><code>:cquit!</code>, <code>:cq!</code></td><td>Force quit with exit code (default 1) ignoring unsaved changes. Accepts an optional integer exit code (:cq! 2).</td></tr>
-<tr><td><code>:theme</code></td><td>Change the editor theme.</td></tr>
+<tr><td><code>:theme</code></td><td>Change the editor theme (show current theme if no name specified).</td></tr>
 <tr><td><code>:clipboard-yank</code></td><td>Yank main selection into system clipboard.</td></tr>
 <tr><td><code>:clipboard-yank-join</code></td><td>Yank joined selections into system clipboard. A separator can be provided as first argument. Default value is newline.</td></tr>
 <tr><td><code>:primary-clipboard-yank</code></td><td>Yank main selection into system primary clipboard.</td></tr>
@@ -797,6 +832,8 @@ you to selectively add search terms to your selections.</p>
 <tr><td><code>:show-directory</code>, <code>:pwd</code></td><td>Show the current working directory.</td></tr>
 <tr><td><code>:encoding</code></td><td>Set encoding. Based on <code>https://encoding.spec.whatwg.org</code>.</td></tr>
 <tr><td><code>:reload</code></td><td>Discard changes and reload from the source file.</td></tr>
+<tr><td><code>:update</code></td><td>Write changes only if the file has been modified.</td></tr>
+<tr><td><code>:lsp-workspace-command</code></td><td>Open workspace command picker</td></tr>
 <tr><td><code>:lsp-restart</code></td><td>Restarts the Language Server that is in use by the current doc</td></tr>
 <tr><td><code>:tree-sitter-scopes</code></td><td>Display tree sitter scopes, primarily for theming and development.</td></tr>
 <tr><td><code>:debug-start</code>, <code>:dbg</code></td><td>Start a debug session from a given template with given parameters.</td></tr>
@@ -836,6 +873,7 @@ Languages</a> guide for more language configuration information.</p>
 <tr><td>bash</td><td>✓</td><td></td><td></td><td><code>bash-language-server</code></td></tr>
 <tr><td>bass</td><td>✓</td><td></td><td></td><td><code>bass</code></td></tr>
 <tr><td>beancount</td><td>✓</td><td></td><td></td><td></td></tr>
+<tr><td>bicep</td><td>✓</td><td></td><td></td><td><code>bicep-langserver</code></td></tr>
 <tr><td>c</td><td>✓</td><td>✓</td><td>✓</td><td><code>clangd</code></td></tr>
 <tr><td>c-sharp</td><td>✓</td><td>✓</td><td></td><td><code>OmniSharp</code></td></tr>
 <tr><td>cairo</td><td>✓</td><td></td><td></td><td></td></tr>
@@ -846,6 +884,7 @@ Languages</a> guide for more language configuration information.</p>
 <tr><td>cpp</td><td>✓</td><td>✓</td><td>✓</td><td><code>clangd</code></td></tr>
 <tr><td>css</td><td>✓</td><td></td><td></td><td><code>vscode-css-language-server</code></td></tr>
 <tr><td>cue</td><td>✓</td><td></td><td></td><td><code>cuelsp</code></td></tr>
+<tr><td>d</td><td>✓</td><td>✓</td><td>✓</td><td><code>serve-d</code></td></tr>
 <tr><td>dart</td><td>✓</td><td></td><td>✓</td><td><code>dart</code></td></tr>
 <tr><td>devicetree</td><td>✓</td><td></td><td></td><td></td></tr>
 <tr><td>diff</td><td>✓</td><td></td><td></td><td></td></tr>
@@ -857,6 +896,7 @@ Languages</a> guide for more language configuration information.</p>
 <tr><td>elixir</td><td>✓</td><td>✓</td><td></td><td><code>elixir-ls</code></td></tr>
 <tr><td>elm</td><td>✓</td><td></td><td></td><td><code>elm-language-server</code></td></tr>
 <tr><td>elvish</td><td>✓</td><td></td><td></td><td><code>elvish</code></td></tr>
+<tr><td>env</td><td>✓</td><td></td><td></td><td></td></tr>
 <tr><td>erb</td><td>✓</td><td></td><td></td><td></td></tr>
 <tr><td>erlang</td><td>✓</td><td>✓</td><td></td><td><code>erlang_ls</code></td></tr>
 <tr><td>esdl</td><td>✓</td><td></td><td></td><td></td></tr>
@@ -879,10 +919,11 @@ Languages</a> guide for more language configuration information.</p>
 <tr><td>hare</td><td>✓</td><td></td><td></td><td></td></tr>
 <tr><td>haskell</td><td>✓</td><td></td><td></td><td><code>haskell-language-server-wrapper</code></td></tr>
 <tr><td>hcl</td><td>✓</td><td></td><td>✓</td><td><code>terraform-ls</code></td></tr>
-<tr><td>heex</td><td>✓</td><td>✓</td><td></td><td></td></tr>
+<tr><td>heex</td><td>✓</td><td>✓</td><td></td><td><code>elixir-ls</code></td></tr>
 <tr><td>html</td><td>✓</td><td></td><td></td><td><code>vscode-html-language-server</code></td></tr>
 <tr><td>idris</td><td></td><td></td><td></td><td><code>idris2-lsp</code></td></tr>
 <tr><td>iex</td><td>✓</td><td></td><td></td><td></td></tr>
+<tr><td>ini</td><td>✓</td><td></td><td></td><td></td></tr>
 <tr><td>java</td><td>✓</td><td></td><td></td><td><code>jdtls</code></td></tr>
 <tr><td>javascript</td><td>✓</td><td>✓</td><td>✓</td><td><code>typescript-language-server</code></td></tr>
 <tr><td>jsdoc</td><td>✓</td><td></td><td></td><td></td></tr>
@@ -890,6 +931,7 @@ Languages</a> guide for more language configuration information.</p>
 <tr><td>jsonnet</td><td>✓</td><td></td><td></td><td><code>jsonnet-language-server</code></td></tr>
 <tr><td>jsx</td><td>✓</td><td>✓</td><td>✓</td><td><code>typescript-language-server</code></td></tr>
 <tr><td>julia</td><td>✓</td><td></td><td></td><td><code>julia</code></td></tr>
+<tr><td>kdl</td><td>✓</td><td></td><td></td><td></td></tr>
 <tr><td>kotlin</td><td>✓</td><td></td><td></td><td><code>kotlin-language-server</code></td></tr>
 <tr><td>latex</td><td>✓</td><td>✓</td><td></td><td><code>texlab</code></td></tr>
 <tr><td>lean</td><td>✓</td><td></td><td></td><td><code>lean</code></td></tr>
@@ -950,13 +992,16 @@ Languages</a> guide for more language configuration information.</p>
 <tr><td>v</td><td>✓</td><td></td><td></td><td><code>vls</code></td></tr>
 <tr><td>vala</td><td>✓</td><td></td><td></td><td><code>vala-language-server</code></td></tr>
 <tr><td>verilog</td><td>✓</td><td>✓</td><td></td><td><code>svlangserver</code></td></tr>
+<tr><td>vhs</td><td>✓</td><td></td><td></td><td></td></tr>
 <tr><td>vue</td><td>✓</td><td></td><td></td><td><code>vls</code></td></tr>
 <tr><td>wast</td><td>✓</td><td></td><td></td><td></td></tr>
 <tr><td>wat</td><td>✓</td><td></td><td></td><td></td></tr>
 <tr><td>wgsl</td><td>✓</td><td></td><td></td><td><code>wgsl_analyzer</code></td></tr>
+<tr><td>wit</td><td>✓</td><td></td><td>✓</td><td></td></tr>
 <tr><td>xit</td><td>✓</td><td></td><td></td><td></td></tr>
+<tr><td>xml</td><td>✓</td><td></td><td>✓</td><td></td></tr>
 <tr><td>yaml</td><td>✓</td><td></td><td>✓</td><td><code>yaml-language-server</code></td></tr>
-<tr><td>zig</td><td>✓</td><td></td><td>✓</td><td><code>zls</code></td></tr>
+<tr><td>zig</td><td>✓</td><td>✓</td><td>✓</td><td><code>zls</code></td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="migrating-from-vim"><a class="header" href="#migrating-from-vim">Migrating from Vim</a></h1>
 <p>Helix's editing model is strongly inspired from Vim and Kakoune, and a notable
@@ -1009,9 +1054,10 @@ on unix operating systems.</p>
 <tr><td><code>line-number</code></td><td>Line number display: <code>absolute</code> simply shows each line's number, while <code>relative</code> shows the distance from the current line. When unfocused or in insert mode, <code>relative</code> will still show absolute line numbers.</td><td><code>absolute</code></td></tr>
 <tr><td><code>cursorline</code></td><td>Highlight all lines with a cursor.</td><td><code>false</code></td></tr>
 <tr><td><code>cursorcolumn</code></td><td>Highlight all columns with a cursor.</td><td><code>false</code></td></tr>
-<tr><td><code>gutters</code></td><td>Gutters to display: Available are <code>diagnostics</code> and <code>line-numbers</code> and <code>spacer</code>, note that <code>diagnostics</code> also includes other features like breakpoints, 1-width padding will be inserted if gutters is non-empty</td><td><code>[&quot;diagnostics&quot;, &quot;line-numbers&quot;]</code></td></tr>
+<tr><td><code>gutters</code></td><td>Gutters to display: Available are <code>diagnostics</code> and <code>line-numbers</code> and <code>spacer</code>, note that <code>diagnostics</code> also includes other features like breakpoints, 1-width padding will be inserted if gutters is non-empty</td><td><code>[&quot;diagnostics&quot;, &quot;spacer&quot;, &quot;line-numbers&quot;]</code></td></tr>
 <tr><td><code>auto-completion</code></td><td>Enable automatic pop up of auto-completion.</td><td><code>true</code></td></tr>
 <tr><td><code>auto-format</code></td><td>Enable automatic formatting on save.</td><td><code>true</code></td></tr>
+<tr><td><code>auto-save</code></td><td>Enable automatic saving on focus moving away from Helix. Requires <a href="https://github.com/helix-editor/helix/wiki/Terminal-Support">focus event support</a> from your terminal.</td><td><code>false</code></td></tr>
 <tr><td><code>idle-timeout</code></td><td>Time in milliseconds since last keypress before idle timers trigger. Used for autocompletion, set to 0 for instant.</td><td><code>400</code></td></tr>
 <tr><td><code>completion-trigger-len</code></td><td>The min-length of word under cursor to trigger autocompletion</td><td><code>2</code></td></tr>
 <tr><td><code>auto-info</code></td><td>Whether to display infoboxes</td><td><code>true</code></td></tr>
@@ -1056,7 +1102,9 @@ mode.select = &quot;SELECT&quot;
 <tr><td><code>total-line-numbers</code></td><td>The total line numbers of the opened file</td></tr>
 <tr><td><code>file-type</code></td><td>The type of the opened file</td></tr>
 <tr><td><code>diagnostics</code></td><td>The number of warnings and/or errors</td></tr>
+<tr><td><code>workspace-diagnostics</code></td><td>The number of warnings and/or errors on workspace</td></tr>
 <tr><td><code>selections</code></td><td>The number of active selections</td></tr>
+<tr><td><code>primary-selection-length</code></td><td>The number of characters currently in primary selection</td></tr>
 <tr><td><code>position</code></td><td>The cursor position</td></tr>
 <tr><td><code>position-percentage</code></td><td>The cursor position as a percentage of the total number of lines</td></tr>
 <tr><td><code>separator</code></td><td>The string defined in <code>editor.statusline.separator</code> (defaults to <code>&quot;│&quot;</code>)</td></tr>
@@ -1183,9 +1231,9 @@ skip-levels = 1
 <p>The names &quot;default&quot; and &quot;base16_default&quot; are reserved for the builtin themes and cannot be overridden by user defined themes.</p>
 <p>The default theme.toml can be found <a href="https://github.com/helix-editor/helix/blob/master/theme.toml">here</a>, and user submitted themes <a href="https://github.com/helix-editor/helix/blob/master/runtime/themes">here</a>. </p>
 <p>Each line in the theme file is specified as below:</p>
-<pre><code class="language-toml">key = { fg = &quot;#ffffff&quot;, bg = &quot;#000000&quot;, modifiers = [&quot;bold&quot;, &quot;italic&quot;] }
+<pre><code class="language-toml">key = { fg = &quot;#ffffff&quot;, bg = &quot;#000000&quot;, underline = { color = &quot;#ff0000&quot;, style = &quot;curl&quot;}, modifiers = [&quot;bold&quot;, &quot;italic&quot;] }
 </code></pre>
-<p>where <code>key</code> represents what you want to style, <code>fg</code> specifies the foreground color, <code>bg</code> the background color, and <code>modifiers</code> is a list of style modifiers. <code>bg</code> and <code>modifiers</code> can be omitted to defer to the defaults.</p>
+<p>where <code>key</code> represents what you want to style, <code>fg</code> specifies the foreground color, <code>bg</code> the background color, <code>underline</code> the underline <code>style</code>/<code>color</code>, and <code>modifiers</code> is a list of style modifiers. <code>bg</code>, <code>underline</code> and <code>modifiers</code> can be omitted to defer to the defaults.</p>
 <p>To specify only the foreground color:</p>
 <pre><code class="language-toml">key = &quot;#ffffff&quot;
 </code></pre>
@@ -1240,6 +1288,21 @@ over it and is merged into the default palette.</p>
 <tr><td><code>reversed</code></td></tr>
 <tr><td><code>hidden</code></td></tr>
 <tr><td><code>crossed_out</code></td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p>Note: The <code>underlined</code> modifier is deprecated and only available for backwards compatibility.
+Its behavior is equivalent to setting <code>underline.style=&quot;line&quot;</code>.</p>
+</blockquote>
+<h3 id="underline-style"><a class="header" href="#underline-style">Underline Style</a></h3>
+<p>One of the following values may be used as a value for <code>underline.style</code>. </p>
+<p>Some styles might not be supported by your terminal emulator.</p>
+<div class="table-wrapper"><table><thead><tr><th>Modifier</th></tr></thead><tbody>
+<tr><td><code>line</code></td></tr>
+<tr><td><code>curl</code></td></tr>
+<tr><td><code>dashed</code></td></tr>
+<tr><td><code>dot</code></td></tr>
+<tr><td><code>double_line</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="inheritance"><a class="header" href="#inheritance">Inheritance</a></h3>
@@ -1599,7 +1662,7 @@ formatter = { command = &quot;mylang-formatter&quot; , args = [&quot;--stdin&quo
 <tr><td><code>name</code></td><td>The name of the language</td></tr>
 <tr><td><code>scope</code></td><td>A string like <code>source.js</code> that identifies the language. Currently, we strive to match the scope names used by popular TextMate grammars and by the Linguist library. Usually <code>source.&lt;name&gt;</code> or <code>text.&lt;name&gt;</code> in case of markup languages</td></tr>
 <tr><td><code>injection-regex</code></td><td>regex pattern that will be tested against a language name in order to determine whether this language should be used for a potential <a href="https://tree-sitter.github.io/tree-sitter/syntax-highlighting#language-injection">language injection</a> site.</td></tr>
-<tr><td><code>file-types</code></td><td>The filetypes of the language, for example <code>[&quot;yml&quot;, &quot;yaml&quot;]</code>. Extensions and full file names are supported.</td></tr>
+<tr><td><code>file-types</code></td><td>The filetypes of the language, for example <code>[&quot;yml&quot;, &quot;yaml&quot;]</code>. See the file-type detection section below.</td></tr>
 <tr><td><code>shebangs</code></td><td>The interpreters from the shebang line, for example <code>[&quot;sh&quot;, &quot;bash&quot;]</code></td></tr>
 <tr><td><code>roots</code></td><td>A set of marker files to look for when trying to find the workspace root. For example <code>Cargo.lock</code>, <code>yarn.lock</code></td></tr>
 <tr><td><code>auto-format</code></td><td>Whether to autoformat this language when saving</td></tr>
@@ -1613,6 +1676,28 @@ formatter = { command = &quot;mylang-formatter&quot; , args = [&quot;--stdin&quo
 <tr><td><code>max-line-length</code></td><td>Maximum line length. Used for the <code>:reflow</code> command</td></tr>
 </tbody></table>
 </div>
+<h3 id="file-type-detection-and-the-file-types-key"><a class="header" href="#file-type-detection-and-the-file-types-key">File-type detection and the <code>file-types</code> key</a></h3>
+<p>Helix determines which language configuration to use with the <code>file-types</code> key
+from the above section. <code>file-types</code> is a list of strings or tables, for
+example:</p>
+<pre><code class="language-toml">file-types = [&quot;Makefile&quot;, &quot;toml&quot;, { suffix = &quot;.git/config&quot; }]
+</code></pre>
+<p>When determining a language configuration to use, Helix searches the file-types
+with the following priorities:</p>
+<ol>
+<li>Exact match: if the filename of a file is an exact match of a string in a
+<code>file-types</code> list, that language wins. In the example above, <code>&quot;Makefile&quot;</code>
+will match against <code>Makefile</code> files.</li>
+<li>Extension: if there are no exact matches, any <code>file-types</code> string that
+matches the file extension of a given file wins. In the example above, the
+<code>&quot;toml&quot;</code> matches files like <code>Cargo.toml</code> or <code>languages.toml</code>.</li>
+<li>Suffix: if there are still no matches, any values in <code>suffix</code> tables
+are checked against the full path of the given file. In the example above,
+the <code>{ suffix = &quot;.git/config&quot; }</code> would match against any <code>config</code> files
+in <code>.git</code> directories. Note: <code>/</code> is used as the directory separator but is
+replaced at runtime with the appropriate path separator for the operating
+system, so this rule would match against <code>.git\config</code> files on Windows.</li>
+</ol>
 <h3 id="language-server-configuration"><a class="header" href="#language-server-configuration">Language Server configuration</a></h3>
 <p>The <code>language-server</code> field takes the following keys:</p>
 <div class="table-wrapper"><table><thead><tr><th>Key</th><th>Description</th></tr></thead><tbody>
