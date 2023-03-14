@@ -22,7 +22,7 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
-      - name: Generate docs
+      - name: Lint changed themes
         run: |
-          git diff --name-only  --diff-filter=ACMRTUXB master | grep  -E '(.toml$)' | xargs -n1 basename -s ".toml" | xargs -n 1 sh -c 'cargo xtask themelint $0'
+          git diff --name-only --diff-filter=ACMRTUXB master | grep  -E 'themes/.+(.toml$)' | xargs -n1 basename -s ".toml" | xargs -n 1 sh -c 'cargo xtask themelint $0'
 
