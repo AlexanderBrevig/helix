@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-      - runtime/themes/*.toml
+      - runtime/themes/*
 jobs:
   themes:
     name: Theme lint
