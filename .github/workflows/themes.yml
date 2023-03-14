@@ -1,0 +1,28 @@
+name: Themes
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+    paths:
+      - runtime/themes/*.toml
+jobs:
+  themes:
+    name: Theme lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@1.65
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Generate docs
+        run: |
+          git diff --name-only  --diff-filter=ACMRTUXB master | grep  -E '(.toml$)' | xargs -n1 basename -s ".toml" | xargs -n 1 sh -c 'cargo xtask themelint $0'
+
